@@ -16,7 +16,7 @@ export default function Player({name, Symbol , isActive}){
 
     let playerName=   <span className="player-name">{pName}</span>;
     if(isEditing){
-        playerName=<input type="text" required value={pName} onChange={handleNameChange}></input>
+        playerName=<input  className="player-name" type="text" required value={pName} onChange={handleNameChange}></input>
     }
 
 

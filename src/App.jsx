@@ -2,15 +2,60 @@ import GameBoard from "./Components/GameBoard";
 import Player from "./Components/Player";
 import { useState } from "react";
 import Logs from "./Components/Logs"
+import {WINNING_COMBINATIONS} from "../winning-combinations"
+import GameOver from "./Components/GameOver";
 
-function App() {
+const initalGameBoard=[
+  [null, null, null],
+  [null, null, null],
+  [null, null, null]
+]
+function getActivePlayer(game)
+{
+  let activePlayer='X';
+  if(game.length>0 && game[0].player==='X') activePlayer='O';
+
+  return activePlayer;
+}
+
+function App() { 
+
   const [gameTurn, setGameTurn]=useState([]);
-  const [activePlayer, setActivePlayer]=useState('X');
-
-  function handleOnSelectSquare()
+  function rematch(){
+    setGameTurn([])
+   }
+  let winner=undefined;
+  const gameBoard=[...initalGameBoard.map(innerArra=> [...innerArra ])];
+  for( let turn of gameTurn)
   {
-    setActivePlayer((currActive)=> currActive==='X'? 'O': 'X')
+      const { square, player}= turn;
+      const {row, col}=square;
+      gameBoard[row][col]=player;
+  }
 
+ 
+  for( const combination of WINNING_COMBINATIONS)
+  {
+    const first= gameBoard[combination[0].row][combination[0].column];
+    const second=gameBoard[combination[1].row][combination[1].column];
+    const third=gameBoard[combination[2].row][combination[2].column];
+
+    if(first && first===second && first===third)
+    {
+      winner=first;
+    }
+  }
+ 
+  const draw=gameTurn.length===9 && !winner;
+  const activePlayer=getActivePlayer(gameTurn);
+  
+  function handleOnSelectSquare(rowIdx, colIdx)
+  {
+    setGameTurn(prevTurn=> {
+      let currPlayer=getActivePlayer(prevTurn);
+      const updateTurn=[{square:{row: rowIdx, col: colIdx}, player: currPlayer },...prevTurn];
+      return updateTurn;
+    })
   }
 
   return (
@@ -20,9 +65,10 @@ function App() {
           <Player name="Hamza" Symbol="X" isActive={activePlayer==='X'}/>
           <Player name="Zeeshan" Symbol="O" isActive={activePlayer==='O'}/>
         </ol>
-        <GameBoard isSelect={handleOnSelectSquare} ActivePlayer={activePlayer}/>
+        {winner!==undefined || draw===true ? <GameOver btnClick={rematch} winner={winner}/>: undefined}
+        <GameBoard board={gameBoard} isSelect={handleOnSelectSquare} ActivePlayer={activePlayer}/>
       </ol>
-     <Logs/>
+     <Logs turns={gameTurn} />
     </main>
   );
 }
