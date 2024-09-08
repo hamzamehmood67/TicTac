@@ -17,15 +17,9 @@ function getActivePlayer(game)
 
   return activePlayer;
 }
-
-function App() { 
-
-  const [gameTurn, setGameTurn]=useState([]);
-  function rematch(){
-    setGameTurn([])
-   }
+function deriveWinner(gameTurn, gameBoard){
   let winner=undefined;
-  const gameBoard=[...initalGameBoard.map(innerArra=> [...innerArra ])];
+
   for( let turn of gameTurn)
   {
       const { square, player}= turn;
@@ -45,7 +39,25 @@ function App() {
       winner=first;
     }
   }
- 
+
+  return winner;
+}
+
+function deriveGameBoard(gameTurn)
+{
+  const gameBoard=[...initalGameBoard.map(innerArra=> [...innerArra ])];
+  return gameBoard;
+}
+
+function App() { 
+
+  const [gameTurn, setGameTurn]=useState([]);
+  function rematch(){
+    setGameTurn([])
+   }
+   
+const gameBoard=deriveGameBoard(gameTurn);
+ let winner=deriveWinner(gameTurn, gameBoard)
   const draw=gameTurn.length===9 && !winner;
   const activePlayer=getActivePlayer(gameTurn);
   
